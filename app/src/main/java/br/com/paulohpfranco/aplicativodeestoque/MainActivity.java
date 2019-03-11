@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(ProductEntry.COLUMN_PRODUCT_NAME, "Headphone");
+        values.put(ProductEntry.COLUMN_PRODUCT_NAME, "Some book");
         values.put(ProductEntry.COLUMN_PRODUCT_PRICE, 0);
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME, "Unknown person");
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE, "+55143332211");
