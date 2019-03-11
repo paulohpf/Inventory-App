@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Aplicativo de Estoque</string>
+
+    <string name="action_insert_dummy_data">Inserir dados de teste</string>
+</resources>
