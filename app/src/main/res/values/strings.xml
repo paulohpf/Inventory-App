@@ -1,5 +1,75 @@
 <resources>
     <string name="app_name">Aplicativo de Estoque</string>
 
+    <string name="details_label_name">Detalhes</string>
+
     <string name="action_insert_dummy_data">Inserir dados de teste</string>
+
+    <string name="action_delete_all_data">Deletar todos os dados</string>
+
+    <string name="action_save">Salvar</string>
+
+    <string name="action_delete">Deletar</string>
+
+    <string name="action_edit_data">Editar</string>
+
+    <string name="action_sell">Vender</string>
+
+    <string name="add_cart">Fazer pedido</string>
+
+    <string name="action_delete_all_data_failed">Erro ao deletar dados</string>
+
+    <string name="action_delete_all_data_success">Dados deletados</string>
+
+    <string name="editor_activity_title_new_product">Adicionar Produto</string>
+
+    <string name="editor_activity_title_update_product">Atualizar Produto</string>
+
+    <string name="empty_view_title_text">Parece que não temos dados</string>
+
+    <string name="empty_view_subtitle_text">Comece adicionando um produto</string>
+
+    <string name="editor_insert_product_failed">Erro ao criar o produto</string>
+
+    <string name="editor_db_product_failed">Erro ao salvar, verifique os campos</string>
+
+    <string name="details_quantity_failed_less">Não pode adicionar quantidade negativa</string>
+
+    <string name="editor_insert_product_successful">Produto criado com sucesso</string>
+
+    <string name="editor_update_product_failed">Falha ao atualizar o produto</string>
+
+    <string name="editor_update_product_successful">O produto foi atualizado com sucesso</string>
+
+    <string name="editor_delete_product_failed">Houve um erro</string>
+
+    <string name="editor_delete_product_successful">O produto foi deletado com sucesso</string>
+
+    <string name="unsaved_changes_dialog_msg">Descartar a suas mudanças e fechar a edição?</string>
+
+    <string name="discard">Descartar</string>
+
+    <string name="keep_editing">Continuar Editando</string>
+
+    <string name="delete_dialog_msg">Deletar o produto?</string>
+
+    <string name="delete">Deletar</string>
+
+    <string name="cancel">Cancelar</string>
+
+    <string name="category_overview">Visão Geral</string>
+
+    <string name="category_supplier_data">Dados do Fornecedor</string>
+
+    <string name="hint_product_name">Nome do produto</string>
+
+    <string name="hint_product_price">Preço do produto</string>
+
+    <string name="hint_product_quantity">Quantidade em estoque</string>
+
+    <string name="category_supplier">Informações do fornecedor</string>
+
+    <string name="hint_product_supplier_name">Nome do fornecedor</string>
+
+    <string name="hint_product_supplier_phone">Telefone do fornecedor</string>
 </resources>

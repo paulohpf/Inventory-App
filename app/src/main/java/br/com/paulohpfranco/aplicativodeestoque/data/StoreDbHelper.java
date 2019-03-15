@@ -33,8 +33,8 @@ public class StoreDbHelper extends SQLiteOpenHelper {
         String SQL_CREATE_STORE_TABLE =  "CREATE TABLE " + ProductEntry.TABLE_NAME + " ("
                 + ProductEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + ProductEntry.COLUMN_PRODUCT_NAME + " STRING NOT NULL, "
-                + ProductEntry.COLUMN_PRODUCT_PRICE + " INT NOT NULL DEFAULT 0, "
-                + ProductEntry.COLUMN_PRODUCT_QUANTITY + " INT NOT NULL DEFAULT 0, "
+                + ProductEntry.COLUMN_PRODUCT_PRICE + " DOUBLE NOT NULL DEFAULT 0, "
+                + ProductEntry.COLUMN_PRODUCT_QUANTITY + " INTEGER NOT NULL DEFAULT 0, "
                 + ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME + " STRING NOT NULL, "
                 + ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE + " STRING NOT NULL );";
 

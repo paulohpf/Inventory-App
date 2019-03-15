@@ -1,131 +1,107 @@
 package br.com.paulohpfranco.aplicativodeestoque;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import br.com.paulohpfranco.aplicativodeestoque.data.StoreContract.ProductEntry;
 import br.com.paulohpfranco.aplicativodeestoque.data.StoreDbHelper;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    /** TAG Padrão para o LOG**/
     public static final String LOG_TAG = StoreDbHelper.class.getSimpleName();
 
-    private StoreDbHelper mDbHelper;
+    /** Loader ID **/
+    private static final int STORE_LOADER = 1;
+
+    /** Cursor Adapter de produto**/
+    ProductCursorAdapter mCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDbHelper = new StoreDbHelper(this);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        displayDatabaseInfo();
-    }
-
-    /**
-     * Temporary helper method to display information in the onscreen TextView about the state of
-     * the pets database.
-     */
-    private void displayDatabaseInfo() {
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        StoreDbHelper mDbHelper = new StoreDbHelper(this);
-
-        // Create and/or open a database to read from it
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
-        /*
-        // Perform this raw SQL query "SELECT * FROM pets"
-        // to get a Cursor that contains all rows from the pets table.
-        Cursor cursor = db.rawQuery("SELECT * FROM " + PetEntry.TABLE_NAME, null);*/
-
-        String[] projection = {
-                ProductEntry._ID,
-                ProductEntry.COLUMN_PRODUCT_NAME,
-                ProductEntry.COLUMN_PRODUCT_PRICE,
-                ProductEntry.COLUMN_PRODUCT_QUANTITY,
-                ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME,
-                ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE
-        };
-
-        Cursor cursor = db.query(
-                ProductEntry.TABLE_NAME,
-                projection,
-                null,
-                null,
-                null,
-                null,
-                null);
-
-        TextView displayView = findViewById(R.id.text_view_store);
-
-        try {
-            displayView.setText("The pets table contains " + cursor.getCount() + " products. \n\n");
-            displayView.append(ProductEntry._ID + " - " +
-                    ProductEntry.COLUMN_PRODUCT_NAME + " - " +
-                    ProductEntry.COLUMN_PRODUCT_PRICE + " - " +
-                    ProductEntry.COLUMN_PRODUCT_QUANTITY + " - " +
-                    ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME + " - " +
-                    ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE + "\n");
-
-            int idColumnIndex = cursor.getColumnIndex(ProductEntry._ID);
-            int nameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_NAME);
-            int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_QUANTITY);
-            int supplierNameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME);
-            int supplierPhoneColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE);
-
-            while (cursor.moveToNext()){
-                int currentID = cursor.getInt(idColumnIndex);
-                String currentName = cursor.getString(nameColumnIndex);
-                String currentPrice = cursor.getString(priceColumnIndex);
-                String currentQuantity = cursor.getString(quantityColumnIndex);
-                String currentSupplierName = cursor.getString(supplierNameColumnIndex);
-                String currentSupplierPhone = cursor.getString(supplierPhoneColumnIndex);
-
-                displayView.append("\n" +
-                        currentID + " - " +
-                        currentName + " - " +
-                        currentPrice + " - " +
-                        currentQuantity + " - " +
-                        currentSupplierName + " - " +
-                        currentSupplierPhone);
+        // Setup FAB to open EditorActivity
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+                startActivity(intent);
             }
-        } finally {
-            // Fechar o cursor quando finalizado
-            cursor.close();
-        }
+        });
+
+        ListView mListView = findViewById(R.id.list_view_store);
+        View emptyView = findViewById(R.id.empty_view);
+
+        mListView.setEmptyView(emptyView);
+
+        mCursorAdapter = new ProductCursorAdapter(this,null);
+        mListView.setAdapter(mCursorAdapter);
+
+        getSupportLoaderManager().initLoader(STORE_LOADER, null, this);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Cria a Intent para {@link DetailsActivity}
+
+                Log.v(LOG_TAG, "Click");
+
+                Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+
+                Uri currentProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
+
+                intent.setData(currentProductUri);
+
+                startActivity(intent);
+            }
+        });
     }
 
     private void insertProduct() {
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put(ProductEntry.COLUMN_PRODUCT_NAME, "Some book");
         values.put(ProductEntry.COLUMN_PRODUCT_PRICE, 0);
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME, "Unknown person");
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE, "+55143332211");
 
-        long newRowId = db.insert(ProductEntry.TABLE_NAME, null, values);
+        Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
 
-        Log.v(LOG_TAG, "new row ID" + newRowId);
+        Log.v(LOG_TAG, "new Uri" + newUri);
+    }
+
+    private void deleteProducts() {
+        int rowsDeleted = getContentResolver().delete(ProductEntry.CONTENT_URI, null, null);
+
+        if(rowsDeleted == 0) {
+            Toast.makeText(this, R.string.action_delete_all_data_failed, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.action_delete_all_data_success, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu.old options from the res/menu/menu_catalog.xml file.
-        // This adds menu.old items to the app bar.
+        // This adds menu_catalog.xml items to the app bar.
         getMenuInflater().inflate(R.menu.menu_catalog, menu);
         return super.onCreateOptionsMenu(menu);
     }
@@ -137,10 +113,37 @@ public class MainActivity extends AppCompatActivity {
             // Respond to a click on the "Insert dummy data" menu.old option
             case R.id.action_insert_dummy_data:
                 insertProduct();
-                displayDatabaseInfo();
-
+                return true;
+            case R.id.action_delete_all_data:
+                deleteProducts();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        String[] projection = {
+                ProductEntry._ID,
+                ProductEntry.COLUMN_PRODUCT_NAME,
+                ProductEntry.COLUMN_PRODUCT_QUANTITY,
+                ProductEntry.COLUMN_PRODUCT_PRICE};
+
+        return new CursorLoader(this,
+                ProductEntry.CONTENT_URI,
+                projection,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mCursorAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mCursorAdapter.swapCursor(null);
     }
 }
