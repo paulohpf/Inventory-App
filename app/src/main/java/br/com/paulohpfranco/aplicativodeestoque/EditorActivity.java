@@ -132,22 +132,23 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String productSupplierPhone = mProductSupplierPhone.getText().toString().trim();
 
         //Verifico se os campos estão vazios
-        if (mCurrentProductUri == null
-                && TextUtils.isEmpty(productName)
-                && TextUtils.isEmpty(productSupplierName)
-                && TextUtils.isEmpty(productSupplierPhone)) {
+        if (TextUtils.isEmpty(productName)
+                || TextUtils.isEmpty(productSupplierName)
+                || TextUtils.isEmpty(productSupplierPhone)) {
             Toast.makeText(this, R.string.editor_db_product_failed, Toast.LENGTH_SHORT).show();
             return;
         }
 
         if(mProductPrice.getText().toString().trim().equals("")) {
-            productPrice = 0.0;
+            Toast.makeText(this, R.string.editor_db_product_failed, Toast.LENGTH_SHORT).show();
+            return;
         } else {
             productPrice = Double.parseDouble(mProductPrice.getText().toString().trim());
         }
 
         if(mProductQuantity.getText().toString().trim().equals("")) {
-            productQuantity = 0;
+            Toast.makeText(this, R.string.editor_db_product_failed, Toast.LENGTH_SHORT).show();
+            return;
         } else {
             productQuantity = Integer.parseInt(mProductQuantity.getText().toString().trim());
         }
@@ -186,47 +187,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 Toast.makeText(this, R.string.editor_update_product_successful, Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    /**
-     * Realiza a deleção do produto no banco de dados
-     */
-    private void deleteProduct() {
-        int rowsAffected = getContentResolver().delete(mCurrentProductUri, null, null);
-
-        if(rowsAffected == 0) {
-            Toast.makeText(this, R.string.editor_delete_product_failed, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, R.string.editor_delete_product_successful, Toast.LENGTH_SHORT).show();
-        }
-        // Fecha a activity
         finish();
-    }
-
-    private void showDeleteConfirmationDialog() {
-        // Cria um AlertDialog.Builder e configura a mensagem, e os listeners
-        // para os botões positivo e negativo do dialogo.
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.delete_dialog_msg);
-        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // O usuário clicou no botão deletar, salvamos o produto
-                deleteProduct();
-            }
-        });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // O usuário clicou no botão cancelar,
-                // então fecha a caixa de dialogo e continua editando
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
-
-        // Cria e exibe o AlertDialog
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
     }
 
     private void showUnsavedChangesDialog(
@@ -288,7 +249,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             case R.id.action_save:
                 // Evento do botão salvar
                 saveProduct();
-                finish();
                 return true;
             case android.R.id.home:
                 // Se o produto não mudou, continua navegando para cima, para a activity pai

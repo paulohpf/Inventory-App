@@ -67,8 +67,6 @@
 
     <string name="hint_product_quantity">Quantidade em estoque</string>
 
-    <string name="category_supplier">Informações do fornecedor</string>
-
     <string name="hint_product_supplier_name">Nome do fornecedor</string>
 
     <string name="hint_product_supplier_phone">Telefone do fornecedor</string>
